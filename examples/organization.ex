@@ -10,6 +10,7 @@ defmodule Example.Organization do
   ash_stripe do
     stripe_customer :stripe_customer_id
     stripe_subscription :stripe_subscription_id
+    stripe_invoice :stripe_invoice_id
   end
   
   attributes do
@@ -18,6 +19,7 @@ defmodule Example.Organization do
     attribute :email, :string
     attribute :stripe_customer_id, :string
     attribute :stripe_subscription_id, :string
+    attribute :stripe_invoice_id, :string
     
     timestamps()
   end
@@ -39,7 +41,8 @@ defmodule Example.Organization do
   relationships do
     # The AshStripe extension will automatically add:
     # belongs_to :stripe_customer, AshStripe.Customer
-    # belongs_to :stripe_subscription, AshStripe.Subscription
+    # belongs_to :stripe_subscription, AshStripe.Subscription  
+    # belongs_to :stripe_invoice, AshStripe.Invoice
   end
 end
 
@@ -56,5 +59,8 @@ defmodule Example.Domain do
     resource AshStripe.Customer
     resource AshStripe.Subscription
     resource AshStripe.PaymentMethod
+    resource AshStripe.Invoice
+    resource AshStripe.Product
+    resource AshStripe.Price
   end
 end

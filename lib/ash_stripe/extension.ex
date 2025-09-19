@@ -94,6 +94,60 @@ defmodule AshStripe.Extension do
     ]
   ]
   
+  @stripe_invoice_schema [
+    attribute: [
+      type: :atom,
+      doc: "The attribute on this resource that contains the Stripe invoice ID",
+      required: true
+    ],
+    relationship_name: [
+      type: :atom,
+      doc: "The name of the relationship to create",
+      default: :stripe_invoice
+    ],
+    allow_nil?: [
+      type: :boolean,
+      doc: "Whether the relationship can be nil",
+      default: true
+    ]
+  ]
+  
+  @stripe_product_schema [
+    attribute: [
+      type: :atom,
+      doc: "The attribute on this resource that contains the Stripe product ID",
+      required: true
+    ],
+    relationship_name: [
+      type: :atom,
+      doc: "The name of the relationship to create",
+      default: :stripe_product
+    ],
+    allow_nil?: [
+      type: :boolean,
+      doc: "Whether the relationship can be nil",
+      default: true
+    ]
+  ]
+  
+  @stripe_price_schema [
+    attribute: [
+      type: :atom,
+      doc: "The attribute on this resource that contains the Stripe price ID",
+      required: true
+    ],
+    relationship_name: [
+      type: :atom,
+      doc: "The name of the relationship to create",
+      default: :stripe_price
+    ],
+    allow_nil?: [
+      type: :boolean,
+      doc: "Whether the relationship can be nil",
+      default: true
+    ]
+  ]
+  
   @ash_stripe %Spark.Dsl.Section{
     name: :ash_stripe,
     describe: "Configuration for AshStripe extension",
@@ -127,6 +181,36 @@ defmodule AshStripe.Extension do
           "stripe_payment_method :payment_method_id"
         ],
         schema: @stripe_payment_method_schema
+      },
+      %Spark.Dsl.Entity{
+        name: :stripe_invoice,
+        target: AshStripe.Extension.StripeInvoice,
+        args: [:attribute],
+        describe: "Defines a relationship to a Stripe invoice",
+        examples: [
+          "stripe_invoice :invoice_id"
+        ],
+        schema: @stripe_invoice_schema
+      },
+      %Spark.Dsl.Entity{
+        name: :stripe_product,
+        target: AshStripe.Extension.StripeProduct,
+        args: [:attribute],
+        describe: "Defines a relationship to a Stripe product",
+        examples: [
+          "stripe_product :product_id"
+        ],
+        schema: @stripe_product_schema
+      },
+      %Spark.Dsl.Entity{
+        name: :stripe_price,
+        target: AshStripe.Extension.StripePrice,
+        args: [:attribute],
+        describe: "Defines a relationship to a Stripe price",
+        examples: [
+          "stripe_price :price_id"
+        ],
+        schema: @stripe_price_schema
       }
     ]
   }

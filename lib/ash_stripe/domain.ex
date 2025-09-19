@@ -9,5 +9,8 @@ defmodule AshStripe.Domain do
     resource AshStripe.Customer
     resource AshStripe.Subscription
     resource AshStripe.PaymentMethod
+    resource AshStripe.Invoice
+    resource AshStripe.Product
+    resource AshStripe.Price
   end
 end
