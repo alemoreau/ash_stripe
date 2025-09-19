@@ -4,8 +4,7 @@ defmodule AshStripe.PaymentMethod do
   """
   
   use Ash.Resource,
-    domain: AshStripe.Domain,
-    data_layer: {AshStripe.DataLayer, endpoint: "/v1/payment_methods"}
+    domain: AshStripe.Domain
   
   attributes do
     attribute :id, :string do

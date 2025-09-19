@@ -4,8 +4,7 @@ defmodule AshStripe.Invoice do
   """
   
   use Ash.Resource,
-    domain: AshStripe.Domain,
-    data_layer: {AshStripe.DataLayer, endpoint: "/v1/invoices"}
+    domain: AshStripe.Domain
   
   attributes do
     attribute :id, :string do

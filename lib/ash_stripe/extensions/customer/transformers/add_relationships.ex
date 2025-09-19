@@ -1,15 +1,15 @@
-defmodule AshStripe.Extension.Transformers.AddRelationships do
+defmodule AshStripe.Extensions.Customer.Transformers.AddRelationships do
   @moduledoc """
-  Transformer that adds Stripe relationships to resources based on the extension configuration.
+  Transformer that adds Stripe customer-related relationships to resources.
   """
   
   use Spark.Dsl.Transformer
   
   def transform(dsl_state) do
-    ash_stripe_config = Spark.Dsl.Extension.get_entities(dsl_state, [:ash_stripe])
+    stripe_customer_config = Spark.Dsl.Extension.get_entities(dsl_state, [:stripe_customer])
     
     dsl_state =
-      Enum.reduce(ash_stripe_config, dsl_state, fn entity, acc ->
+      Enum.reduce(stripe_customer_config, dsl_state, fn entity, acc ->
         add_relationship_for_entity(acc, entity)
       end)
     
@@ -18,7 +18,7 @@ defmodule AshStripe.Extension.Transformers.AddRelationships do
   
   def after_compile?, do: false
   
-  defp add_relationship_for_entity(dsl_state, %AshStripe.Extension.StripeCustomer{} = entity) do
+  defp add_relationship_for_entity(dsl_state, %AshStripe.Extensions.Customer.StripeCustomer{} = entity) do
     relationship = %Ash.Resource.Relationships.BelongsTo{
       name: entity.relationship_name,
       destination: AshStripe.Customer,
@@ -31,7 +31,7 @@ defmodule AshStripe.Extension.Transformers.AddRelationships do
     Spark.Dsl.Transformer.add_entity(dsl_state, [:relationships], relationship)
   end
   
-  defp add_relationship_for_entity(dsl_state, %AshStripe.Extension.StripeSubscription{} = entity) do
+  defp add_relationship_for_entity(dsl_state, %AshStripe.Extensions.Customer.StripeSubscription{} = entity) do
     relationship = %Ash.Resource.Relationships.BelongsTo{
       name: entity.relationship_name,
       destination: AshStripe.Subscription,
@@ -44,7 +44,7 @@ defmodule AshStripe.Extension.Transformers.AddRelationships do
     Spark.Dsl.Transformer.add_entity(dsl_state, [:relationships], relationship)
   end
   
-  defp add_relationship_for_entity(dsl_state, %AshStripe.Extension.StripePaymentMethod{} = entity) do
+  defp add_relationship_for_entity(dsl_state, %AshStripe.Extensions.Customer.StripePaymentMethod{} = entity) do
     relationship = %Ash.Resource.Relationships.BelongsTo{
       name: entity.relationship_name,
       destination: AshStripe.PaymentMethod,
@@ -57,36 +57,10 @@ defmodule AshStripe.Extension.Transformers.AddRelationships do
     Spark.Dsl.Transformer.add_entity(dsl_state, [:relationships], relationship)
   end
   
-  defp add_relationship_for_entity(dsl_state, %AshStripe.Extension.StripeInvoice{} = entity) do
+  defp add_relationship_for_entity(dsl_state, %AshStripe.Extensions.Customer.StripeInvoice{} = entity) do
     relationship = %Ash.Resource.Relationships.BelongsTo{
       name: entity.relationship_name,
       destination: AshStripe.Invoice,
-      source_attribute: entity.attribute,
-      destination_attribute: :id,
-      allow_nil?: entity.allow_nil?,
-      define_attribute?: false
-    }
-    
-    Spark.Dsl.Transformer.add_entity(dsl_state, [:relationships], relationship)
-  end
-  
-  defp add_relationship_for_entity(dsl_state, %AshStripe.Extension.StripeProduct{} = entity) do
-    relationship = %Ash.Resource.Relationships.BelongsTo{
-      name: entity.relationship_name,
-      destination: AshStripe.Product,
-      source_attribute: entity.attribute,
-      destination_attribute: :id,
-      allow_nil?: entity.allow_nil?,
-      define_attribute?: false
-    }
-    
-    Spark.Dsl.Transformer.add_entity(dsl_state, [:relationships], relationship)
-  end
-  
-  defp add_relationship_for_entity(dsl_state, %AshStripe.Extension.StripePrice{} = entity) do
-    relationship = %Ash.Resource.Relationships.BelongsTo{
-      name: entity.relationship_name,
-      destination: AshStripe.Price,
       source_attribute: entity.attribute,
       destination_attribute: :id,
       allow_nil?: entity.allow_nil?,

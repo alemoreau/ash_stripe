@@ -5,9 +5,9 @@ defmodule Example.Organization do
   
   use Ash.Resource,
     domain: Example.Domain,
-    extensions: [AshStripe.Extension]
+    extensions: [AshStripe.Extensions.Customer]
   
-  ash_stripe do
+  stripe_customer do
     stripe_customer :stripe_customer_id
     stripe_subscription :stripe_subscription_id
     stripe_invoice :stripe_invoice_id
@@ -39,7 +39,7 @@ defmodule Example.Organization do
   end
   
   relationships do
-    # The AshStripe extension will automatically add:
+    # The AshStripe.Extensions.Customer extension automatically adds:
     # belongs_to :stripe_customer, AshStripe.Customer
     # belongs_to :stripe_subscription, AshStripe.Subscription  
     # belongs_to :stripe_invoice, AshStripe.Invoice

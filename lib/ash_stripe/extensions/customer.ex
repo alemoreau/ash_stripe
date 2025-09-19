@@ -1,45 +1,44 @@
-defmodule AshStripe.Extension do
+defmodule AshStripe.Extensions.Customer do
   @moduledoc """
-  An Ash extension for integrating Stripe with your Ash applications.
+  An Ash extension for resources that need relationships to Stripe customer data.
   
-  This extension allows you to easily set up relationships between your existing
-  Ash resources and Stripe resources like customers, subscriptions, and payment methods.
+  This extension allows you to easily add relationships to Stripe customer-related
+  resources from your existing Ash resources.
   
   ## Usage
-  
-  Add this extension to your existing Ash resource:
   
       defmodule MyApp.Organization do
         use Ash.Resource,
           domain: MyApp.Domain,
-          extensions: [AshStripe.Extension]
+          extensions: [AshStripe.Extensions.Customer]
         
-        ash_stripe do
-          stripe_customer :customer_id
-          stripe_subscription :subscription_id
+        stripe_customer do
+          stripe_customer :stripe_customer_id
+          stripe_subscription :stripe_subscription_id
+          stripe_payment_method :default_payment_method_id
         end
         
         attributes do
           uuid_primary_key :id
           attribute :name, :string
-          attribute :customer_id, :string
-          attribute :subscription_id, :string
+          attribute :stripe_customer_id, :string
+          attribute :stripe_subscription_id, :string
+          attribute :default_payment_method_id, :string
         end
       end
   
-  This will automatically add relationships to Stripe resources and provide
-  helper functions for working with Stripe data.
+  This will automatically add relationships to Stripe customer-related resources.
   """
   
-  @sections [:ash_stripe]
+  @sections [:stripe_customer]
   
   use Spark.Dsl.Extension,
     sections: @sections,
-    transformers: [AshStripe.Extension.Transformers.AddRelationships]
+    transformers: [AshStripe.Extensions.Customer.Transformers.AddRelationships]
   
   def sections, do: @sections
   
-  # DSL configuration
+  # DSL configuration for customer relationships
   @stripe_customer_schema [
     attribute: [
       type: :atom,
@@ -112,49 +111,13 @@ defmodule AshStripe.Extension do
     ]
   ]
   
-  @stripe_product_schema [
-    attribute: [
-      type: :atom,
-      doc: "The attribute on this resource that contains the Stripe product ID",
-      required: true
-    ],
-    relationship_name: [
-      type: :atom,
-      doc: "The name of the relationship to create",
-      default: :stripe_product
-    ],
-    allow_nil?: [
-      type: :boolean,
-      doc: "Whether the relationship can be nil",
-      default: true
-    ]
-  ]
-  
-  @stripe_price_schema [
-    attribute: [
-      type: :atom,
-      doc: "The attribute on this resource that contains the Stripe price ID",
-      required: true
-    ],
-    relationship_name: [
-      type: :atom,
-      doc: "The name of the relationship to create",
-      default: :stripe_price
-    ],
-    allow_nil?: [
-      type: :boolean,
-      doc: "Whether the relationship can be nil",
-      default: true
-    ]
-  ]
-  
-  @ash_stripe %Spark.Dsl.Section{
-    name: :ash_stripe,
-    describe: "Configuration for AshStripe extension",
+  @stripe_customer %Spark.Dsl.Section{
+    name: :stripe_customer,
+    describe: "Configuration for Stripe customer-related relationships",
     entities: [
       %Spark.Dsl.Entity{
         name: :stripe_customer,
-        target: AshStripe.Extension.StripeCustomer,
+        target: AshStripe.Extensions.Customer.StripeCustomer,
         args: [:attribute],
         describe: "Defines a relationship to a Stripe customer",
         examples: [
@@ -164,7 +127,7 @@ defmodule AshStripe.Extension do
       },
       %Spark.Dsl.Entity{
         name: :stripe_subscription,
-        target: AshStripe.Extension.StripeSubscription,
+        target: AshStripe.Extensions.Customer.StripeSubscription,
         args: [:attribute],
         describe: "Defines a relationship to a Stripe subscription",
         examples: [
@@ -174,7 +137,7 @@ defmodule AshStripe.Extension do
       },
       %Spark.Dsl.Entity{
         name: :stripe_payment_method,
-        target: AshStripe.Extension.StripePaymentMethod,
+        target: AshStripe.Extensions.Customer.StripePaymentMethod,
         args: [:attribute],
         describe: "Defines a relationship to a Stripe payment method",
         examples: [
@@ -184,36 +147,16 @@ defmodule AshStripe.Extension do
       },
       %Spark.Dsl.Entity{
         name: :stripe_invoice,
-        target: AshStripe.Extension.StripeInvoice,
+        target: AshStripe.Extensions.Customer.StripeInvoice,
         args: [:attribute],
         describe: "Defines a relationship to a Stripe invoice",
         examples: [
           "stripe_invoice :invoice_id"
         ],
         schema: @stripe_invoice_schema
-      },
-      %Spark.Dsl.Entity{
-        name: :stripe_product,
-        target: AshStripe.Extension.StripeProduct,
-        args: [:attribute],
-        describe: "Defines a relationship to a Stripe product",
-        examples: [
-          "stripe_product :product_id"
-        ],
-        schema: @stripe_product_schema
-      },
-      %Spark.Dsl.Entity{
-        name: :stripe_price,
-        target: AshStripe.Extension.StripePrice,
-        args: [:attribute],
-        describe: "Defines a relationship to a Stripe price",
-        examples: [
-          "stripe_price :price_id"
-        ],
-        schema: @stripe_price_schema
       }
     ]
   }
   
-  use Spark.Dsl.Extension, sections: [@ash_stripe]
+  use Spark.Dsl.Extension, sections: [@stripe_customer]
 end

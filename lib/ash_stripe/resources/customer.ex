@@ -6,8 +6,7 @@ defmodule AshStripe.Customer do
   """
   
   use Ash.Resource,
-    domain: AshStripe.Domain,
-    data_layer: {AshStripe.DataLayer, endpoint: "/v1/customers"}
+    domain: AshStripe.Domain
   
   attributes do
     attribute :id, :string do
@@ -68,13 +67,12 @@ defmodule AshStripe.Customer do
   end
   
   actions do
-    defaults [:read]
-    
     create :create do
       accept [
         :email, :name, :phone, :description, :address, :shipping,
         :metadata, :preferred_locales, :tax_exempt
       ]
+      manual AshStripe.Actions.CreateCustomer
     end
     
     update :update do
@@ -82,26 +80,23 @@ defmodule AshStripe.Customer do
         :email, :name, :phone, :description, :address, :shipping,
         :metadata, :preferred_locales, :tax_exempt
       ]
+      manual AshStripe.Actions.UpdateCustomer
     end
     
-    destroy :destroy
+    destroy :destroy do
+      manual AshStripe.Actions.DestroyCustomer
+    end
     
     read :list do
       pagination offset?: true, countable: true, default_limit: 10
+      manual AshStripe.Actions.ListCustomers
     end
     
     read :get_by_id do
       argument :id, :string, allow_nil?: false
       get? true
+      manual AshStripe.Actions.GetCustomer
     end
-  end
-  
-  preparations do
-    prepare AshStripe.Preparations.LoadFromStripe
-  end
-  
-  changes do
-    change AshStripe.Changes.SyncToStripe, on: [:create, :update, :destroy]
   end
   
   identities do

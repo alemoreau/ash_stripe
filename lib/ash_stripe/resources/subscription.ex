@@ -4,8 +4,7 @@ defmodule AshStripe.Subscription do
   """
   
   use Ash.Resource,
-    domain: AshStripe.Domain,
-    data_layer: {AshStripe.DataLayer, endpoint: "/v1/subscriptions"}
+    domain: AshStripe.Domain
   
   attributes do
     attribute :id, :string do
@@ -61,8 +60,6 @@ defmodule AshStripe.Subscription do
   end
   
   actions do
-    defaults [:read]
-    
     create :create do
       accept [
         :customer, :automatic_tax, :billing_cycle_anchor, :billing_thresholds,
@@ -72,6 +69,7 @@ defmodule AshStripe.Subscription do
         :metadata, :on_behalf_of, :payment_settings, :pending_invoice_item_interval,
         :transfer_data, :trial_end, :trial_settings
       ]
+      manual AshStripe.Actions.CreateSubscription
     end
     
     update :update do
@@ -83,29 +81,32 @@ defmodule AshStripe.Subscription do
         :metadata, :on_behalf_of, :payment_settings, :pending_invoice_item_interval,
         :transfer_data, :trial_end, :trial_settings
       ]
+      manual AshStripe.Actions.UpdateSubscription
     end
     
-    destroy :destroy
+    destroy :destroy do
+      manual AshStripe.Actions.DestroySubscription
+    end
     
     read :list do
       pagination offset?: true, countable: true, default_limit: 10
+      manual AshStripe.Actions.ListSubscriptions
     end
     
     read :get_by_id do
       argument :id, :string, allow_nil?: false
       get? true
+      manual AshStripe.Actions.GetSubscription
     end
     
     read :for_customer do
       argument :customer_id, :string, allow_nil?: false
-      filter expr(customer == ^arg(:customer_id))
+      manual AshStripe.Actions.ListSubscriptionsForCustomer
     end
     
     update :cancel do
       accept []
-      change fn changeset, _context ->
-        Ash.Changeset.change_attribute(changeset, :cancel_at_period_end, true)
-      end
+      manual AshStripe.Actions.CancelSubscription
     end
   end
   
@@ -114,14 +115,6 @@ defmodule AshStripe.Subscription do
       source_attribute :customer
       destination_attribute :id
     end
-  end
-  
-  preparations do
-    prepare AshStripe.Preparations.LoadFromStripe
-  end
-  
-  changes do
-    change AshStripe.Changes.SyncToStripe, on: [:create, :update, :destroy]
   end
   
   identities do
