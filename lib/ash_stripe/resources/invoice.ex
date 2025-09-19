@@ -105,6 +105,7 @@ defmodule AshStripe.Invoice do
         :footer, :metadata, :on_behalf_of, :payment_settings,
         :rendering_options, :statement_descriptor, :subscription
       ]
+      manual AshStripe.Actions.CreateInvoice
     end
     
     update :update do
@@ -114,43 +115,52 @@ defmodule AshStripe.Invoice do
         :metadata, :on_behalf_of, :payment_settings,
         :rendering_options, :statement_descriptor
       ]
+      manual AshStripe.Actions.UpdateInvoice
     end
     
-    destroy :destroy
+    destroy :destroy do
+      manual AshStripe.Actions.DestroyInvoice
+    end
     
     read :list do
       pagination offset?: true, countable: true, default_limit: 10
+      manual AshStripe.Actions.ListInvoices
     end
     
     read :get_by_id do
       argument :id, :string, allow_nil?: false
       get? true
+      manual AshStripe.Actions.GetInvoice
     end
     
     read :for_customer do
       argument :customer_id, :string, allow_nil?: false
-      filter expr(customer == ^arg(:customer_id))
+      manual AshStripe.Actions.ListInvoicesForCustomer
     end
     
     read :for_subscription do
       argument :subscription_id, :string, allow_nil?: false
-      filter expr(subscription == ^arg(:subscription_id))
+      manual AshStripe.Actions.ListInvoicesForSubscription
     end
     
     update :finalize do
       accept []
+      manual AshStripe.Actions.FinalizeInvoice
     end
     
     update :pay do
       accept []
+      manual AshStripe.Actions.PayInvoice
     end
     
     update :send_invoice do
       accept []
+      manual AshStripe.Actions.SendInvoice
     end
     
     update :void do
       accept []
+      manual AshStripe.Actions.VoidInvoice
     end
   end
   

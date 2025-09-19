@@ -37,8 +37,6 @@ defmodule AshStripe.Price do
   end
   
   actions do
-    defaults [:read]
-    
     create :create do
       accept [
         :currency, :product, :active, :billing_scheme,
@@ -47,6 +45,7 @@ defmodule AshStripe.Price do
         :tiers, :tiers_mode, :transform_quantity, :type,
         :unit_amount, :unit_amount_decimal
       ]
+      manual AshStripe.Actions.CreatePrice
     end
     
     update :update do
@@ -54,29 +53,32 @@ defmodule AshStripe.Price do
         :active, :currency_options, :lookup_key, :metadata,
         :nickname, :tax_behavior, :transfer_lookup_key
       ]
+      manual AshStripe.Actions.UpdatePrice
     end
     
     read :list do
       pagination offset?: true, countable: true, default_limit: 10
+      manual AshStripe.Actions.ListPrices
     end
     
     read :get_by_id do
       argument :id, :string, allow_nil?: false
       get? true
+      manual AshStripe.Actions.GetPrice
     end
     
     read :for_product do
       argument :product_id, :string, allow_nil?: false
-      filter expr(product == ^arg(:product_id))
+      manual AshStripe.Actions.ListPricesForProduct
     end
     
     read :active do
-      filter expr(active == true)
+      manual AshStripe.Actions.ListActivePrices
     end
     
     read :by_lookup_key do
       argument :lookup_key, :string, allow_nil?: false
-      filter expr(lookup_key == ^arg(:lookup_key))
+      manual AshStripe.Actions.GetPriceByLookupKey
     end
   end
   

@@ -63,46 +63,48 @@ defmodule AshStripe.PaymentMethod do
         :acss_debit, :affirm, :klarna, :paynow, :promptpay,
         :customer_balance, :link, :boleto, :oxxo, :konbini, :cashapp
       ]
+      manual AshStripe.Actions.CreatePaymentMethod
     end
     
     update :update do
       accept [
         :billing_details, :metadata, :allow_redisplay, :card
       ]
+      manual AshStripe.Actions.UpdatePaymentMethod
     end
     
-    destroy :destroy
+    destroy :destroy do
+      manual AshStripe.Actions.DestroyPaymentMethod
+    end
     
     read :list do
       pagination offset?: true, countable: true, default_limit: 10
+      manual AshStripe.Actions.ListPaymentMethods
     end
     
     read :get_by_id do
       argument :id, :string, allow_nil?: false
       get? true
+      manual AshStripe.Actions.GetPaymentMethod
     end
     
     read :for_customer do
       argument :customer_id, :string, allow_nil?: false
-      filter expr(customer == ^arg(:customer_id))
+      manual AshStripe.Actions.ListPaymentMethodsForCustomer
     end
     
     read :by_type do
       argument :type, :string, allow_nil?: false
-      filter expr(type == ^arg(:type))
+      manual AshStripe.Actions.ListPaymentMethodsByType
     end
     
     update :attach do
       argument :customer_id, :string, allow_nil?: false
-      change fn changeset, _context ->
-        Ash.Changeset.change_attribute(changeset, :customer, changeset.arguments[:customer_id])
-      end
+      manual AshStripe.Actions.AttachPaymentMethod
     end
     
     update :detach do
-      change fn changeset, _context ->
-        Ash.Changeset.change_attribute(changeset, :customer, nil)
-      end
+      manual AshStripe.Actions.DetachPaymentMethod
     end
   end
   

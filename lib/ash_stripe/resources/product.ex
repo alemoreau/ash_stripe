@@ -37,8 +37,6 @@ defmodule AshStripe.Product do
   end
   
   actions do
-    defaults [:read]
-    
     create :create do
       accept [
         :name, :active, :description, :features, :images,
@@ -46,6 +44,7 @@ defmodule AshStripe.Product do
         :shippable, :statement_descriptor, :tax_code, :type,
         :unit_label, :url
       ]
+      manual AshStripe.Actions.CreateProduct
     end
     
     update :update do
@@ -55,26 +54,31 @@ defmodule AshStripe.Product do
         :package_dimensions, :shippable, :statement_descriptor,
         :tax_code, :url
       ]
+      manual AshStripe.Actions.UpdateProduct
     end
     
-    destroy :destroy
+    destroy :destroy do
+      manual AshStripe.Actions.DestroyProduct
+    end
     
     read :list do
       pagination offset?: true, countable: true, default_limit: 10
+      manual AshStripe.Actions.ListProducts
     end
     
     read :get_by_id do
       argument :id, :string, allow_nil?: false
       get? true
+      manual AshStripe.Actions.GetProduct
     end
     
     read :active do
-      filter expr(active == true)
+      manual AshStripe.Actions.ListActiveProducts
     end
     
     read :by_type do
       argument :type, :string, allow_nil?: false
-      filter expr(type == ^arg(:type))
+      manual AshStripe.Actions.ListProductsByType
     end
   end
   

@@ -12,5 +12,9 @@ defmodule AshStripe.Domain do
     resource AshStripe.Invoice
     resource AshStripe.Product
     resource AshStripe.Price
+    resource AshStripe.PaymentIntent
+    resource AshStripe.SetupIntent
+    resource AshStripe.Refund
+    resource AshStripe.Charge
   end
 end
